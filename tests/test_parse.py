@@ -31,7 +31,7 @@ def test_parse(expr: str):
     ],
 )
 def test_expr(expr, expected):
-    result = crontabula.parse(f"{expr} 0 0 0 0")
+    result = crontabula.parse(f"{expr} * * * *")
     assert result.minutes == expected, result.minutes
 
 
