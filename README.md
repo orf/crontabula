@@ -1,5 +1,7 @@
 # Crontabula 🧛
 
+[![PyPI version](https://badge.fury.io/py/crontabula.svg)](https://badge.fury.io/py/crontabula)
+
 Crontabula is a small library for parsing Crontab expressions into Python objects. The usage is simple:
 
 ```python
