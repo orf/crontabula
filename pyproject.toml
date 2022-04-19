@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "crontabula"
+version = "0.1.0"
+description = ""
+authors = ["Tom Forbes <tom@tomforb.es>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+click = { version = "*", optional = true }
+
+[tool.poetry.extras]
+cli = ["click"]
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.1"
+pytest-click = "^1.1.0"
+pre-commit = "^2.18.1"
+pytest-freezegun = "^0.4.2"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--doctest-modules"
+
+[tool.poetry.scripts]
+crontabula = 'crontabula.cli:cli'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
