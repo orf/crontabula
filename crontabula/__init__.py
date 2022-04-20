@@ -137,16 +137,14 @@ def _expression_to_list(
         # Return the single numeric value
         return [_try_int(expr, max_value=max_value, min_value=min_value)]
     elif "/" in expr:
+        # The rhs of an expression containing a / is the "step" value, i.e `*/3` means 
+        # every 3 minutes
         lhs, rhs = expr.split("/")
         rhs_step = _try_int(rhs, max_value=max_value, min_value=min_value)
         return _expression_to_list(lhs, max_value, step=rhs_step, min_value=min_value)
-    elif "," in expr:
-        lhs, rhs = expr.split(",")
-        result = set(
-            _expression_to_list(lhs, max_value, min_value=min_value, step=step)
-        ) | set(_expression_to_list(rhs, max_value, min_value=min_value, step=step))
-        return list(sorted(result))
     elif "-" in expr:
+        # Expressions containing - represent two values, x-y. x must be less than y, but this 
+        # isn't currently checked.
         range_start, range_end = expr.split("-")
         return list(
             range(
@@ -156,7 +154,7 @@ def _expression_to_list(
             )
         )
 
-    raise RuntimeError(f"Invalid expression: {expr}")
+    raise InvalidExpression(f"Invalid expression: {expr}")
 
 
 def _try_int(v, max_value: int, min_value: int) -> int:
