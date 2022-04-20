@@ -27,22 +27,21 @@ class Crontab:
         >>> crontab.next
         datetime.datetime(...)
         """
-        return next(iter(self.date_times))
+        return next(iter(self.date_times()))
 
-    @property
     def date_times(self) -> Iterable[datetime.datetime]:
         """
         Infinitely yield future points in time that this crontab expression points to. For example:
 
         >>> import itertools
         >>> crontab = parse("*/10 * * * *")
-        >>> list(itertools.islice(crontab.date_times, 3))
+        >>> list(itertools.islice(crontab.date_times(), 3))
         [datetime.datetime(...), datetime.datetime(...), datetime.datetime(...)]
         """
         anchor = datetime.datetime.now()
         year = anchor.year
 
-        for day in self.dates:
+        for day in self.dates():
             is_today = day == anchor.date()
 
             for hour in self.hours:
@@ -63,14 +62,13 @@ class Crontab:
                     if dt.weekday() in self.day_of_week:
                         yield dt
 
-    @property
     def dates(self) -> Iterable[datetime.date]:
         """
         Infinitely yield future dates that this crontab expression points to. For example:
 
         >>> import itertools
         >>> crontab = parse("*/10 * * * *")
-        >>> list(itertools.islice(crontab.dates, 3))
+        >>> list(itertools.islice(crontab.dates(), 3))
         [datetime.date(...), datetime.date(...), datetime.date(...)]
         """
         cal = calendar.Calendar()
@@ -137,13 +135,13 @@ def _expression_to_list(
         # Return the single numeric value
         return [_try_int(expr, max_value=max_value, min_value=min_value)]
     elif "/" in expr:
-        # The rhs of an expression containing a / is the "step" value, i.e `*/3` means 
+        # The rhs of an expression containing a / is the "step" value, i.e `*/3` means
         # every 3 minutes
         lhs, rhs = expr.split("/")
         rhs_step = _try_int(rhs, max_value=max_value, min_value=min_value)
         return _expression_to_list(lhs, max_value, step=rhs_step, min_value=min_value)
     elif "-" in expr:
-        # Expressions containing - represent two values, x-y. x must be less than y, but this 
+        # Expressions containing - represent two values, x-y. x must be less than y, but this
         # isn't currently checked.
         range_start, range_end = expr.split("-")
         return list(
