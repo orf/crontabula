@@ -127,8 +127,7 @@ def _expression_to_list(
             )
         }
         return list(sorted(values))
-
-    if expr == "*":
+    elif expr == "*":
         # Return all possible values
         return list(range(min_value, max_value + 1, step))
     elif expr.isnumeric():
