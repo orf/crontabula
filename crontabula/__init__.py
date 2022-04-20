@@ -6,6 +6,19 @@ import calendar
 __all__ = ["Crontab", "parse", "InvalidExpression"]
 
 
+# From https://en.wikipedia.org/wiki/Cron#Nonstandard_predefined_scheduling_definitions
+
+MACROS = {
+    "@yearly": "0 0 1 1 *",
+    "@annually": "0 0 1 1 *",
+    "@monthly": "0 0 1 * *",
+    "@weekly": "0 0 * * 0",
+    "@daily": "0 0 * * *",
+    "@midnight": "0 0 * * *",
+    "@hourly": "0 * * * *",
+}
+
+
 class InvalidExpression(ValueError):
     pass
 
@@ -96,6 +109,9 @@ def parse(expression: str) -> Crontab:
     >>> parse("*/10 * * * *")
     Crontab(...)
     """
+    # Resolve macros (@hourly etc) to equivalent cron expressions
+    expression = MACROS.get(expression, expression)
+
     parts = expression.split(" ")
     if len(parts) != 5:
         raise InvalidExpression(f'"{expression}" does not have 5 components')

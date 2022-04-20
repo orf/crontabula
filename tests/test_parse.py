@@ -14,6 +14,7 @@ import crontabula
         "23 0-20/2 * * *",
         "0 0,12 1 */2 *",
         "23 0-20/2 * * *",
+        *crontabula.MACROS.keys(),
     ],
 )
 def test_parse(expr: str):
