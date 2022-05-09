@@ -43,3 +43,9 @@ def test_next():
     next_iteration = crontab.next
     assert next_iteration > now
     assert next_iteration == datetime.datetime(2022, 4, 1, 3, 0)
+
+
+@pytest.mark.freeze_time("2022-03-31 23:00")
+def test_month_end():
+    crontab = crontabula.parse("0 20 * * *")
+    assert crontab.next == datetime.datetime(2022, 4, 1, 20)
