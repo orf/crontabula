@@ -103,6 +103,9 @@ class Crontab:
                     if day_of_week not in self.day_of_week:
                         continue
 
+                    if day_of_month not in self.day_of_month:
+                        continue
+
                     yield datetime.date(anchor.year, month, day_of_month)
             anchor = datetime.date(year=anchor.year + 1, month=1, day=1)
 
