@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List, Iterable
+from typing import List, Iterable, Optional
 import datetime
 import calendar
 
@@ -42,7 +42,9 @@ class Crontab:
         """
         return next(iter(self.date_times()))
 
-    def date_times(self) -> Iterable[datetime.datetime]:
+    def date_times(
+        self, start: Optional[datetime.datetime] = None
+    ) -> Iterable[datetime.datetime]:
         """
         Infinitely yield future points in time that this crontab expression points to. For example:
 
@@ -51,18 +53,19 @@ class Crontab:
         >>> list(itertools.islice(crontab.date_times(), 3))
         [datetime.datetime(...), datetime.datetime(...), datetime.datetime(...)]
         """
-        anchor = datetime.datetime.now()
+        anchor = start if start else datetime.datetime.now()
+        anchor_date = anchor.date()
         year = anchor.year
 
-        for day in self.dates():
-            is_today = day == anchor.date()
+        for day in self.dates(anchor_date):
+            is_start_day = day == anchor_date
 
             for hour in self.hours:
-                if is_today and hour < anchor.hour:
+                if is_start_day and hour < anchor.hour:
                     continue
 
                 for minute in self.minutes:
-                    if is_today and minute < anchor.minute:
+                    if is_start_day and minute < anchor.minute:
                         continue
 
                     dt = datetime.datetime(
@@ -75,7 +78,7 @@ class Crontab:
                     if dt.weekday() in self.day_of_week:
                         yield dt
 
-    def dates(self) -> Iterable[datetime.date]:
+    def dates(self, start: Optional[datetime.date] = None) -> Iterable[datetime.date]:
         """
         Infinitely yield future dates that this crontab expression points to. For example:
 
@@ -85,7 +88,7 @@ class Crontab:
         [datetime.date(...), datetime.date(...), datetime.date(...)]
         """
         cal = calendar.Calendar()
-        anchor = datetime.date.today()
+        anchor = start if start else datetime.date.today()
         while True:
             for month in self.months:
                 if month < anchor.month:

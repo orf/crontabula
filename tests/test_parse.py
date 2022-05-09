@@ -1,4 +1,5 @@
 import datetime
+import itertools
 
 import pytest
 import crontabula
@@ -55,3 +56,17 @@ def test_month_end():
 def test_day_of_month():
     crontab = crontabula.parse("0 0 1 * *")
     assert crontab.next == datetime.datetime(2022, 6, 1)
+
+
+@pytest.mark.freeze_time("2022-04-01")
+def test_start():
+    crontab = crontabula.parse("15 3 * * *")
+    now = datetime.datetime.now()
+
+    date_times = crontab.date_times(start=now - datetime.timedelta(days=2))
+    assert list(itertools.islice(date_times, 4)) == [
+        datetime.datetime(2022, 3, 30, 3, 15),
+        datetime.datetime(2022, 3, 31, 3, 15),
+        datetime.datetime(2022, 4, 1, 3, 15),
+        datetime.datetime(2022, 4, 2, 3, 15),
+    ]
