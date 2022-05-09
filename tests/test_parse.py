@@ -36,8 +36,10 @@ def test_expr(expr, expected):
     assert result.minutes == expected, result.minutes
 
 
+@pytest.mark.freeze_time("2022-04-01")
 def test_next():
     crontab = crontabula.parse("*/10 3,6 * * 1-4")
     now = datetime.datetime.now()
     next_iteration = crontab.next
     assert next_iteration > now
+    assert next_iteration == datetime.datetime(2022, 4, 1, 3, 0)
