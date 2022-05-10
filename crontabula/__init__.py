@@ -92,10 +92,18 @@ class Crontab:
                     continue
 
                 for day_of_month, day_of_week in cal.itermonthdays2(anchor.year, month):
+                    # itermonthdays yields all days required to get a full week,
+                    # but those outside the current month are 0
+                    if day_of_month == 0:
+                        continue
+
                     if month == anchor.month and day_of_month < anchor.day:
                         continue
 
                     if day_of_week not in self.day_of_week:
+                        continue
+
+                    if day_of_month not in self.day_of_month:
                         continue
 
                     yield datetime.date(anchor.year, month, day_of_month)
