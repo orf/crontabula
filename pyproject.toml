@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "crontabula"
-version = "0.1.4"
+version = "0.1.5"
 description = "Parse crontab expressions with Python"
 readme = "README.md"
 authors = ["Tom Forbes <tom@tomforb.es>"]
