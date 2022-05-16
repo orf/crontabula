@@ -70,3 +70,42 @@ def test_start():
         datetime.datetime(2022, 4, 1, 3, 15),
         datetime.datetime(2022, 4, 2, 3, 15),
     ]
+
+
+@pytest.mark.freeze_time("2022-04-01 10:30")
+def test_minutes():
+    crontab = crontabula.parse("*/5 * * * *")
+
+    date_times = crontab.date_times()
+    assert list(itertools.islice(date_times, 12)) == [
+        datetime.datetime(2022, 4, 1, 10, 30),
+        datetime.datetime(2022, 4, 1, 10, 35),
+        datetime.datetime(2022, 4, 1, 10, 40),
+        datetime.datetime(2022, 4, 1, 10, 45),
+        datetime.datetime(2022, 4, 1, 10, 50),
+        datetime.datetime(2022, 4, 1, 10, 55),
+        datetime.datetime(2022, 4, 1, 11, 0),
+        datetime.datetime(2022, 4, 1, 11, 5),
+        datetime.datetime(2022, 4, 1, 11, 10),
+        datetime.datetime(2022, 4, 1, 11, 15),
+        datetime.datetime(2022, 4, 1, 11, 20),
+        datetime.datetime(2022, 4, 1, 11, 25),
+    ]
+
+    # Check that the minutes skipped on the initial day are not skipped
+    # in subsequent days.
+    date_times = crontab.date_times(datetime.datetime(2022, 4, 2, 10, 0))
+    assert list(itertools.islice(date_times, 12)) == [
+        datetime.datetime(2022, 4, 2, 10, 0),
+        datetime.datetime(2022, 4, 2, 10, 5),
+        datetime.datetime(2022, 4, 2, 10, 10),
+        datetime.datetime(2022, 4, 2, 10, 15),
+        datetime.datetime(2022, 4, 2, 10, 20),
+        datetime.datetime(2022, 4, 2, 10, 25),
+        datetime.datetime(2022, 4, 2, 10, 30),
+        datetime.datetime(2022, 4, 2, 10, 35),
+        datetime.datetime(2022, 4, 2, 10, 40),
+        datetime.datetime(2022, 4, 2, 10, 45),
+        datetime.datetime(2022, 4, 2, 10, 50),
+        datetime.datetime(2022, 4, 2, 10, 55),
+    ]

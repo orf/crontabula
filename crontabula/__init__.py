@@ -61,11 +61,13 @@ class Crontab:
             is_start_day = day == anchor_date
 
             for hour in self.hours:
+                is_start_hour = is_start_day and hour == anchor.hour
+
                 if is_start_day and hour < anchor.hour:
                     continue
 
                 for minute in self.minutes:
-                    if is_start_day and minute < anchor.minute:
+                    if is_start_hour and minute < anchor.minute:
                         continue
 
                     dt = datetime.datetime(
