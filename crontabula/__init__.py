@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List, Iterable, Optional
+from typing import List, Iterator, Optional
 import datetime
 import calendar
 
@@ -40,11 +40,11 @@ class Crontab:
         >>> crontab.next
         datetime.datetime(...)
         """
-        return next(iter(self.date_times()))
+        return next(self.date_times())
 
     def date_times(
         self, start: Optional[datetime.datetime] = None
-    ) -> Iterable[datetime.datetime]:
+    ) -> Iterator[datetime.datetime]:
         """
         Infinitely yield future points in time that this crontab expression points to. For example:
 
@@ -80,7 +80,7 @@ class Crontab:
                     if dt.weekday() in self.day_of_week:
                         yield dt
 
-    def dates(self, start: Optional[datetime.date] = None) -> Iterable[datetime.date]:
+    def dates(self, start: Optional[datetime.date] = None) -> Iterator[datetime.date]:
         """
         Infinitely yield future dates that this crontab expression points to. For example:
 
