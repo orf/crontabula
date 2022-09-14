@@ -43,7 +43,7 @@ def test_next():
     now = datetime.datetime.now()
     next_iteration = crontab.next
     assert next_iteration > now
-    assert next_iteration == datetime.datetime(2022, 4, 1, 3, 0)
+    assert next_iteration == datetime.datetime(2022, 4, 4, 3, 0)
 
 
 @pytest.mark.freeze_time("2022-03-31 23:00")
@@ -115,3 +115,21 @@ def test_minutes():
 def test_year():
     crontab = crontabula.parse("0 0 * 4 *")
     assert crontab.next == datetime.datetime(2023, 4, 1)
+
+
+@pytest.mark.parametrize(
+    "cron_day_of_week, py_day_of_week",
+    [
+        (0, 6),  # Sunday
+        (1, 0),  # Monday
+        (2, 1),  # Tuesday
+        (3, 2),  # Wednesday
+        (4, 3),  # Thursday
+        (5, 4),  # Friday
+        (6, 5),  # Saturday
+    ],
+)
+@pytest.mark.freeze_time("2022-01-01")
+def test_day_of_week(cron_day_of_week, py_day_of_week):
+    crontab = crontabula.parse(f"0 0 * 2 {cron_day_of_week}")
+    assert crontab.next.weekday() == py_day_of_week

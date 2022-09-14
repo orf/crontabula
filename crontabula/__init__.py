@@ -77,7 +77,7 @@ class Crontab:
                         hour=hour,
                         minute=minute,
                     )
-                    if dt.weekday() in self.day_of_week:
+                    if _day_of_week_to_cron(dt.weekday()) in self.day_of_week:
                         yield dt
 
     def dates(self, start: Optional[datetime.date] = None) -> Iterator[datetime.date]:
@@ -105,7 +105,7 @@ class Crontab:
                     if month == anchor.month and day_of_month < anchor.day:
                         continue
 
-                    if day_of_week not in self.day_of_week:
+                    if _day_of_week_to_cron(day_of_week) not in self.day_of_week:
                         continue
 
                     if day_of_month not in self.day_of_month:
@@ -195,3 +195,8 @@ def _try_int(v, max_value: int, min_value: int) -> int:
         )
 
     return result
+
+
+def _day_of_week_to_cron(day_of_week: int):
+    """Convert Python day-of-week (0 = Monday) to Cron (0 = Sunday)"""
+    return (day_of_week + 1) % 7
