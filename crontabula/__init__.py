@@ -30,6 +30,8 @@ class Crontab:
     day_of_month: List[int]
     months: List[int]
     day_of_week: List[int]
+    day_of_month_asterisk: bool
+    day_of_week_asterisk: bool
 
     @property
     def next(self) -> datetime.datetime:
@@ -102,11 +104,20 @@ class Crontab:
                     if month == anchor.month and day_of_month < anchor.day:
                         continue
 
-                    if _day_of_week_to_cron(day_of_week) not in self.day_of_week:
-                        continue
+                    day_of_month_match = day_of_month in self.day_of_month
+                    day_of_week_match = (
+                        _day_of_week_to_cron(day_of_week) in self.day_of_week
+                    )
 
-                    if day_of_month not in self.day_of_month:
-                        continue
+                    if self.day_of_week_asterisk:
+                        if not day_of_month_match:
+                            continue
+                    elif self.day_of_month_asterisk:
+                        if not day_of_week_match:
+                            continue
+                    else:
+                        if not day_of_month_match and not day_of_week_match:
+                            continue
 
                     yield datetime.date(anchor.year, month, day_of_month)
             anchor = datetime.date(year=anchor.year + 1, month=1, day=1)
@@ -134,7 +145,15 @@ def parse(expression: str) -> Crontab:
     months = _expression_to_list(month_expr, max_value=12, min_value=1)
     day_weeks = _expression_to_list(day_week_expr, max_value=6)
 
-    return Crontab(minutes, hours, day_months, months, day_weeks)
+    return Crontab(
+        minutes,
+        hours,
+        day_months,
+        months,
+        day_weeks,
+        day_month_expr == "*",
+        day_week_expr == "*",
+    )
 
 
 def _expression_to_list(

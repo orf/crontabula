@@ -133,3 +133,74 @@ def test_year():
 def test_day_of_week(cron_day_of_week, py_day_of_week):
     crontab = crontabula.parse(f"0 0 * 2 {cron_day_of_week}")
     assert crontab.next.weekday() == py_day_of_week
+
+
+@pytest.mark.freeze_time("2022-01-01")
+def test_day_of_week_and_month():
+    # Comments come from https://man7.org/linux/man-pages/man1/crontab.1p.html
+
+    # If month, day of month, and day of week are all <asterisk> characters,
+    # every day shall be matched.
+    crontab = crontabula.parse("0 0 * * *")
+    assert list(itertools.islice(crontab.dates(), 31)) == [
+        datetime.date(2022, 1, day) for day in range(1, 32)
+    ]
+
+    # If either the month or day of month is specified as an element or list,
+    # but the day of week is an <asterisk>, the month and day of month fields
+    # shall specify the days that match.
+    crontab = crontabula.parse("0 0 3 * *")
+    assert list(itertools.islice(crontab.dates(), 2)) == [
+        datetime.date(2022, 1, 3),
+        datetime.date(2022, 2, 3),
+    ]
+    crontab = crontabula.parse("0 0 * 2 *")
+    assert list(itertools.islice(crontab.dates(), 2)) == [
+        datetime.date(2022, 2, 1),
+        datetime.date(2022, 2, 2),
+    ]
+    crontab = crontabula.parse("0 0 3 2 *")
+    assert list(itertools.islice(crontab.dates(), 2)) == [
+        datetime.date(2022, 2, 3),
+        datetime.date(2023, 2, 3),
+    ]
+
+    # If both month and day of month are specified as an <asterisk>, but day of
+    # week is an element or list, then only the specified days of the week match.
+    crontab = crontabula.parse("0 0 * * 5")
+    assert list(itertools.islice(crontab.dates(), 2)) == [
+        datetime.date(2022, 1, 7),
+        datetime.date(2022, 1, 14),
+    ]
+
+    # Finally, if either the month or day of month is specified as an element
+    # or list, and the day of week is also specified as an element or list,
+    # then any day matching either the month and day of month, or the day of
+    # week, shall be matched.
+    crontab = crontabula.parse("0 0 3 * 5")
+    assert list(itertools.islice(crontab.dates(), 7)) == [
+        datetime.date(2022, 1, 3),
+        datetime.date(2022, 1, 7),
+        datetime.date(2022, 1, 14),
+        datetime.date(2022, 1, 21),
+        datetime.date(2022, 1, 28),
+        datetime.date(2022, 2, 3),
+        datetime.date(2022, 2, 4),
+    ]
+    crontab = crontabula.parse("0 0 * 2 5")
+    assert list(itertools.islice(crontab.dates(), 5)) == [
+        datetime.date(2022, 2, 4),
+        datetime.date(2022, 2, 11),
+        datetime.date(2022, 2, 18),
+        datetime.date(2022, 2, 25),
+        datetime.date(2023, 2, 3),
+    ]
+    crontab = crontabula.parse("0 0 3 2 5")
+    assert list(itertools.islice(crontab.dates(), 6)) == [
+        datetime.date(2022, 2, 3),
+        datetime.date(2022, 2, 4),
+        datetime.date(2022, 2, 11),
+        datetime.date(2022, 2, 18),
+        datetime.date(2022, 2, 25),
+        datetime.date(2023, 2, 3),
+    ]
