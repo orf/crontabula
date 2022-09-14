@@ -70,15 +70,13 @@ class Crontab:
                     if is_start_hour and minute < anchor.minute:
                         continue
 
-                    dt = datetime.datetime(
+                    yield datetime.datetime(
                         year=day.year,
                         month=day.month,
                         day=day.day,
                         hour=hour,
                         minute=minute,
                     )
-                    if _day_of_week_to_cron(dt.weekday()) in self.day_of_week:
-                        yield dt
 
     def dates(self, start: Optional[datetime.date] = None) -> Iterator[datetime.date]:
         """
