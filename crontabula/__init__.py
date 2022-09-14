@@ -71,7 +71,7 @@ class Crontab:
                         continue
 
                     dt = datetime.datetime(
-                        year=year,
+                        year=day.year,
                         month=day.month,
                         day=day.day,
                         hour=hour,
