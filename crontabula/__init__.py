@@ -55,7 +55,6 @@ class Crontab:
         """
         anchor = start if start else datetime.datetime.now()
         anchor_date = anchor.date()
-        year = anchor.year
 
         for day in self.dates(anchor_date):
             is_start_day = day == anchor_date
