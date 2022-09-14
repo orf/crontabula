@@ -109,3 +109,9 @@ def test_minutes():
         datetime.datetime(2022, 4, 2, 10, 50),
         datetime.datetime(2022, 4, 2, 10, 55),
     ]
+
+
+@pytest.mark.freeze_time("2022-12-31 23:59:59")
+def test_year():
+    crontab = crontabula.parse("0 0 * 4 *")
+    assert crontab.next == datetime.datetime(2023, 4, 1)
