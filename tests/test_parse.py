@@ -134,6 +134,23 @@ def test_day_of_week(cron_day_of_week, py_day_of_week):
     crontab = crontabula.parse(f"0 0 * 2 {cron_day_of_week}")
     assert crontab.next.weekday() == py_day_of_week
 
+@pytest.mark.parametrize(
+    "cron_day_of_week, py_day_of_week",
+    [
+        ("SUN", 6),  # Sunday
+        ("MON", 0),  # Monday
+        ("TUE", 1),  # Tuesday
+        ("WED", 2),  # Wednesday
+        ("THU", 3),  # Thursday
+        ("FRI", 4),  # Friday
+        ("SAT", 5),  # Saturday
+    ],
+)
+def test_text_day_of_week(cron_day_of_week, py_day_of_week):
+    # Test text day of week representations
+    crontab = crontabula.parse(f"0 0 * 2 {cron_day_of_week}")
+    assert crontab.next.weekday() == py_day_of_week
+
 
 @pytest.mark.freeze_time("2022-01-01")
 def test_day_of_week_and_month():
