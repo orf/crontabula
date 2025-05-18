@@ -190,6 +190,14 @@ def test_day_of_week_and_month():
         datetime.date(2022, 1, 14),
     ]
 
+    # Test day of week as text instead of number
+    #   at midnight
+    crontab = crontabula.parse("0 0 * * FRI")
+    assert list(itertools.islice(crontab.dates(), 2)) == [
+        datetime.date(2022, 1, 7),
+        datetime.date(2022, 1, 14),
+    ]
+
     # Finally, if either the month or day of month is specified as an element
     # or list, and the day of week is also specified as an element or list,
     # then any day matching either the month and day of month, or the day of
