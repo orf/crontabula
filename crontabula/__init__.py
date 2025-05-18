@@ -137,7 +137,10 @@ def parse(expression: str) -> Crontab:
     if len(parts) != 5:
         raise InvalidExpression(f'"{expression}" does not have 5 components')
 
-    minute_expr, hour_expr, day_month_expr, month_expr, day_week_expr = parts
+    minute_expr, hour_expr, day_month_expr, month_expr, _day_week_expr = parts
+
+    # Handle day of week abbreviations, such as TUE
+    day_week_expr = _handle_text_day_week(day_week_expr=_day_week_expr)
 
     minutes = _expression_to_list(minute_expr, max_value=59)
     hours = _expression_to_list(hour_expr, max_value=23)
@@ -155,6 +158,21 @@ def parse(expression: str) -> Crontab:
         day_week_expr == "*",
     )
 
+def _handle_text_day_week(day_week_expr: str) -> str:
+    # convert day of week text representations, such as TUE to
+    # numerical format.
+
+    # This could be improved for silly cases such as checking for
+    # invalid strings like SUNMONTUE, but that would probably require
+    # a regex because SUN-TUE and SUN,MON,TUE are valid
+    day_week_expr = day_week_expr.replace("SUN", "0")
+    day_week_expr = day_week_expr.replace("MON", "1")
+    day_week_expr = day_week_expr.replace("TUE", "2")
+    day_week_expr = day_week_expr.replace("WED", "3")
+    day_week_expr = day_week_expr.replace("THU", "4")
+    day_week_expr = day_week_expr.replace("FRI", "5")
+    day_week_expr = day_week_expr.replace("SAT", "6")
+    return day_week_expr
 
 def _expression_to_list(
     expr: str, max_value: int, *, min_value: int = 0, step: int = 1
